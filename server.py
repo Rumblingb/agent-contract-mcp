@@ -14,7 +14,7 @@ import uuid
 from datetime import datetime, timezone
 from typing import Any, Dict, List, Optional
 
-from mcp.server import Server, NotificationOptions
+from mcp.server.lowlevel import Server, NotificationOptions
 from mcp.server.models import InitializationOptions
 from mcp.types import Tool, TextContent, ErrorData
 from mcp.shared.exceptions import McpError
