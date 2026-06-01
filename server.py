@@ -14,8 +14,7 @@ import uuid
 from datetime import datetime, timezone
 from typing import Any, Dict, List, Optional
 
-from mcp.server.lowlevel import Server, NotificationOptions
-from mcp.server.models import InitializationOptions
+from mcp.server.lowlevel import Server
 from mcp.types import Tool, TextContent, ErrorData
 from mcp.shared.exceptions import McpError
 
@@ -583,21 +582,15 @@ async def _handle_contract_report_breach(args: dict) -> TextContent:
 def main():
     """Run the AgentContract MCP server via stdio transport."""
     import anyio
+    from mcp.server.stdio import stdio_server
 
     async def _run():
-        async with server.run(
-            read_stream=server.stdio_read(),
-            write_stream=server.stdio_write(),
-            initialization_options=InitializationOptions(
-                server_name="agent-contract-server",
-                server_version="1.0.0",
-                capabilities=server.get_capabilities(
-                    notification_options=NotificationOptions(),
-                    experimental_capabilities={},
-                ),
-            ),
-        ):
-            await server.wait_for_shutdown()
+        async with stdio_server() as (read_stream, write_stream):
+            await server.run(
+                read_stream=read_stream,
+                write_stream=write_stream,
+                initialization_options=server.create_initialization_options(),
+            )
 
     anyio.run(_run)
 
